@@ -89,7 +89,7 @@ router.get('/:id/comments', (req, res) => {
     else{
       Posts.insert(req.body)
             .then(post => {
-                res.status(201).json({post})
+                res.status(201).json(post)
             })
             .catch(err => {
                 res.status(500).json({err : "Issues with insert post"})
@@ -101,30 +101,53 @@ router.get('/:id/comments', (req, res) => {
 //   | DELETE | /api/posts/:id          | Removes the post with the specified id and returns the **deleted post object**. You may need to make additional calls to the database in order to satisfy this requirement. |
   router.delete('/:id', (req, res) => {
       const id = req.params.id;
-      if(!id){
-          res.status(404).json({ message: "Id is not found"})
-      }
-      else{
-        Posts.findById(id)
-        .then(post => {
-            Posts.remove(id)
-              .then(deleted => {
-                  if(deleted){
-                      res.status(200).json(post)
-                  }
-              })
-              .catch(err => {
-                  res.setEncoding(500).json({
-                      error: "issues with remove post"
-                  })
-              })
-        })
-        .catch(err =>{
-            res.status(500).json({err : "Post is not found"})
-        })
-      }
+      Posts.findById(id)
+      .then(post => {
+          Posts.remove(id)
+          .then(deleted => 
+            {
+                if(deleted === 1){
+                    res.status(200).json({message: "Success!"}) 
+                }
+                else {
+                    res.status(400).json({Message: "Failure"})  
+                }
+                
+            })
+          .catch(err => res.status(500).json(err)) 
+      }).catch(err => res.status(404).json({ message: "Id is not found"}))
+
+
+
+
+
+    //   if(!id){
+    //       res.status(404).json({ message: "Id is not found"})
+    //   }
+    //   else{
+          
+    //     Posts.findById(id)
+    //     .then(post => {
+    //         Posts.remove(id)
+    //           .then(deleted => {
+    //               if(deleted){
+    //                   res.status(200).json(post)
+    //               }
+    //           })
+    //           .catch(err => {
+    //               res.status(500).json({
+    //                   error: "issues with remove post"
+    //               })
+    //           })
+    //     })
+    //     .catch(err =>{
+    //         res.status(500).json({err : "Post is not found"})
+    //     })
+    //   }
   })
   
+
+
 //   | PUT    | /api/posts/:id          | Updates the post with the specified `id` using data from the `request body`. Returns the modified document, **NOT the original**.  
   router.put("/:id", (req, res) => {
       const id = req.params.id;
